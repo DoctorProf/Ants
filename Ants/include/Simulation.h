@@ -11,22 +11,22 @@
 class Simulation
 {
 public:
-	Simulation(int width, int height, Vector2 size_cell, int count_ants, float evaporation_rate, float pheromone_deposit, float speed_ant);
+	Simulation(int width, int height, Vector2 size_cell, int count_ants, float evaporation_rate, float pheromone_deposit, float speed_ant, int radius_home);
 	void init();
 	void update(float dt);
 
 	std::vector<Ant> ants;
 	std::vector<std::vector<Cell>> map;
 	std::vector<FoodSource> food_sources;
-	Vector2 size_cell;
 	Vector2 size_map;
 	Vector2 home_position;
-	int radius_home;
 
-	int count_ants;
 	int width;
 	int height;
+	Vector2 size_cell;
+	int count_ants;
 	float evaporation_rate;
 	float pheromone_deposit;
 	float speed_ant;
+	int radius_home;
 };

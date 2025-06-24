@@ -3,6 +3,5 @@
 enum Target
 {
 	HOME,
-	FOOD,
-	NONE
+	FOOD
 };
