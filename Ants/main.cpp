@@ -7,7 +7,7 @@ int main()
 	const int WIDTH = 1280;
 	const int HEIGHT = 720;
 
-	Simulation simulation = Simulation(WIDTH, HEIGHT, { 5, 5 }, 100, 0.99f, 0.2f, 300.f, 15);
+	Simulation simulation = Simulation(WIDTH, HEIGHT, { 5, 5 }, 1000, 0.995f, 0.1f, 120.f, 30, 1, 20, 1000, 500.f);
 
 	simulation.init();
 
@@ -47,6 +47,7 @@ int main()
 		for (auto& source : simulation.food_sources)
 		{
 			DrawCircle(source.position.x, source.position.y, source.radius, Color(255, 0, 0, 255));
+			DrawText(std::to_string(source.count_food).c_str(), source.position.x - source.radius / 2, source.position.y - source.radius / 2, 12, Color(255, 255, 255, 255));
 		}
 		EndDrawing();
 	}

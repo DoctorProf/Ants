@@ -137,6 +137,7 @@
   <ItemGroup>
     <ClInclude Include="include\Ant.h" />
     <ClInclude Include="include\Cell.h" />
+    <ClInclude Include="include\DirectionOption.h" />
     <ClInclude Include="include\FoodSource.h" />
     <ClInclude Include="include\Simulation.h" />
     <ClInclude Include="include\Target.h" />
