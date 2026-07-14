@@ -7,14 +7,25 @@ int main()
 	const int WIDTH = 1280;
 	const int HEIGHT = 720;
 
-	Simulation simulation = Simulation(WIDTH, HEIGHT, { 5, 5 }, 1000, 0.995f, 0.1f, 120.f, 30, 1, 20, 1000, 500.f);
+	Simulation simulation = Simulation(WIDTH, HEIGHT, { 5, 5 }, 500, 0.995f, 0.1f, 120.f, 30, 1, 20, 1000, 500.f);
 
 	simulation.init();
 
 	while (!WindowShouldClose())
 	{
 		float dt = GetFrameTime();
+		if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+		{
+			Vector2 mouse_pos = GetMousePosition();
 
+			simulation.food_sources.push_back(
+				FoodSource(
+					mouse_pos,
+					simulation.count_food_to_source,
+					simulation.radius_food_source
+				)
+			);
+		}
 		simulation.update(dt);
 
 		BeginDrawing();

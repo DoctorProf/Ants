@@ -148,7 +148,6 @@ void Simulation::init()
 //				if (it != food_sources.end())
 //				{
 //					ant.target = Target::HOME;
-//					ant.angle += PI;
 //					ant.pheromone_supply = supply_pheromone;
 //					if (--it->count_food <= 0)
 //					{
@@ -166,7 +165,6 @@ void Simulation::init()
 //				if (circle_collision(ant_pos, home_position, radius_home / 1.2))
 //				{
 //					ant.target = Target::FOOD;
-//					ant.angle += PI;
 //					ant.pheromone_supply = supply_pheromone;
 //					continue;
 //				}
@@ -230,7 +228,7 @@ void Simulation::update(float dt)
 			}
 		}
 
-		if (max_pheromone > 0.1f && randomFloat(0.f, 1.f) > 0.05f)
+		if (max_pheromone > pheromone_deposit && randomFloat(0.f, pheromone_deposit) > pheromone_deposit / 2)
 		{
 			ant.angle = target_angle;
 		}
@@ -277,7 +275,7 @@ void Simulation::update(float dt)
 			if (ant.target == Target::FOOD)
 			{
 				float dist = distance(ant.position, home_position);
-				float factor = std::clamp(1.0f - dist / 1000.f, 0.1f, 1.f);
+				float factor = std::clamp(1.f - dist / 500.f, 0.1f, 1.f);
 				float amount = pheromone_deposit * factor * 2.0f;
 
 				map[grid_y][grid_x].pheromone_home = std::clamp(
@@ -296,9 +294,9 @@ void Simulation::update(float dt)
 					ant.target = Target::HOME;
 					ant.angle += PI + randomFloat(-PI / 8, PI / 8);
 
-					for (int i = -2; i <= 2; i++)
+					for (int i = -1; i <= 1; ++i)
 					{
-						for (int j = -2; j <= 2; j++)
+						for (int j = -1; j <= 1; ++j)
 						{
 							int y = grid_y + i;
 							int x = grid_x + j;
@@ -322,7 +320,7 @@ void Simulation::update(float dt)
 			else
 			{
 				float dist = distance(ant.position, home_position);
-				float factor = std::clamp(dist / 500.f, 0.1f, 1.f);
+				float factor = std::clamp(1.f - dist / 500.f, 0.1f, 1.f);
 				float amount = pheromone_deposit * factor * 2.0f;
 
 				map[grid_y][grid_x].pheromone_food = std::clamp(
@@ -336,9 +334,9 @@ void Simulation::update(float dt)
 					ant.target = Target::FOOD;
 					ant.angle += PI + randomFloat(-PI / 8, PI / 8);
 
-					for (int i = -2; i <= 2; i++)
+					for (int i = -1; i <= 1; ++i)
 					{
-						for (int j = -2; j <= 2; j++)
+						for (int j = -1; j <= 1; ++j)
 						{
 							int y = grid_y + i;
 							int x = grid_x + j;
