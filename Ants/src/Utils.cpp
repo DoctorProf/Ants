@@ -8,6 +8,10 @@ Vector2 utils::getDirection(Vector2 pos_1, Vector2 pos_2)
 {
 	Vector2 dir = { pos_2.x - pos_1.x , pos_2.y - pos_1.y };
 	float length = getVecLength(dir);
+	if (length == 0.f)
+	{
+		return { 0.f, 0.f };
+	}
 	dir = { dir.x / length, dir.y / length };
 	return dir;
 }
