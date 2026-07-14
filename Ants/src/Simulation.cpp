@@ -193,7 +193,6 @@ void Simulation::update(float dt)
 	{
 		float target_angle = ant.angle;
 		float max_pheromone = 0.0f;
-		std::vector<DirectionOption> options;
 
 		for (float offset = -PI / 4; offset <= PI / 4; offset += PI / 16)
 		{
@@ -206,8 +205,8 @@ void Simulation::update(float dt)
 			};
 			Vector2 grid_pos =
 			{
-				floor(pos.x / size_cell.x),
-				floor(pos.y / size_cell.y)
+				floorf(pos.x / size_cell.x),
+				floorf(pos.y / size_cell.y)
 			};
 
 			if (utils::outOfBounds(size_map, grid_pos)) continue;
@@ -216,12 +215,7 @@ void Simulation::update(float dt)
 				? map[(int)grid_pos.y][(int)grid_pos.x].pheromone_food
 				: map[(int)grid_pos.y][(int)grid_pos.x].pheromone_home;
 
-			pheromone = powf(pheromone, 2.0f);
-
-			DirectionOption option;
-			option.angle = angle;
-			option.weight = pheromone;
-			options.push_back(option);
+			pheromone = powf(pheromone, 3.0f);
 
 			if (pheromone > max_pheromone)
 			{
@@ -230,7 +224,13 @@ void Simulation::update(float dt)
 			}
 		}
 
-		if (max_pheromone > 0.1f && randomFloat(0.f, 1.f) > 0.05f)
+		if (ant.target == Target::HOME)
+		{
+			Vector2 home_direction = getDirection(ant.position, home_position);
+			target_angle = atan2f(home_direction.y, home_direction.x);
+			ant.angle = target_angle + randomFloat(-PI / 32, PI / 32);
+		}
+		else if (max_pheromone > 0.02f && randomFloat(0.f, 1.f) > 0.01f)
 		{
 			ant.angle = target_angle;
 		}
@@ -263,8 +263,8 @@ void Simulation::update(float dt)
 
 		Vector2 grid_pos =
 		{
-			floor(next_pos.x / size_cell.x),
-			floor(next_pos.y / size_cell.y)
+			floorf(next_pos.x / size_cell.x),
+			floorf(next_pos.y / size_cell.y)
 		};
 
 		if (!utils::outOfBounds(size_map, grid_pos))
@@ -276,16 +276,6 @@ void Simulation::update(float dt)
 
 			if (ant.target == Target::FOOD)
 			{
-				float dist = distance(ant.position, home_position);
-				float factor = std::clamp(1.0f - dist / 1000.f, 0.1f, 1.f);
-				float amount = pheromone_deposit * factor * 2.0f;
-
-				map[grid_y][grid_x].pheromone_home = std::clamp(
-					map[grid_y][grid_x].pheromone_home + amount,
-					0.f,
-					1.f
-				);
-
 				auto it = std::find_if(food_sources.begin(), food_sources.end(),
 					[&](const FoodSource& source) {
 						return circle_collision(ant_pos, source.position, source.radius);
@@ -294,7 +284,9 @@ void Simulation::update(float dt)
 				if (it != food_sources.end())
 				{
 					ant.target = Target::HOME;
-					ant.angle += PI + randomFloat(-PI / 8, PI / 8);
+					Vector2 home_direction = getDirection(ant.position, home_position);
+					ant.angle = atan2f(home_direction.y, home_direction.x);
+					float amount = pheromone_deposit * 4.0f;
 
 					for (int i = -2; i <= 2; i++)
 					{
@@ -305,8 +297,8 @@ void Simulation::update(float dt)
 							Vector2 check_pos = { (float)x, (float)y };
 							if (!utils::outOfBounds(size_map, check_pos))
 							{
-								map[y][x].pheromone_home = std::clamp(
-									map[y][x].pheromone_home + amount * 0.5f,
+								map[y][x].pheromone_food = std::clamp(
+									map[y][x].pheromone_food + amount * 0.5f,
 									0.f,
 									1.f
 								);
@@ -323,7 +315,7 @@ void Simulation::update(float dt)
 			{
 				float dist = distance(ant.position, home_position);
 				float factor = std::clamp(dist / 500.f, 0.1f, 1.f);
-				float amount = pheromone_deposit * factor * 2.0f;
+				float amount = pheromone_deposit * factor * 3.0f;
 
 				map[grid_y][grid_x].pheromone_food = std::clamp(
 					map[grid_y][grid_x].pheromone_food + amount,
